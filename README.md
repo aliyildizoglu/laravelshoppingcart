@@ -1,43 +1,44 @@
-# Laravel 5 & 6 , 7 & 9 Shopping Cart
-[![Build Status](https://travis-ci.org/darryldecode/laravelshoppingcart.svg?branch=master)](https://travis-ci.org/darryldecode/laravelshoppingcart)
-[![Total Downloads](https://poser.pugx.org/darryldecode/cart/d/total.svg)](https://packagist.org/packages/darryldecode/cart)
-[![License](https://poser.pugx.org/darryldecode/cart/license.svg)](https://packagist.org/packages/darryldecode/cart)
+# Laravel 5 & 6, 7 & 9 Alışveriş Sepeti
 
-A Shopping Cart Implementation for Laravel Framework
+[![Build Durumu](https://travis-ci.org/darryldecode/laravelshoppingcart.svg?branch=master)](https://travis-ci.org/darryldecode/laravelshoppingcart)
+[![Toplam İndirmeler](https://poser.pugx.org/darryldecode/cart/d/total.svg)](https://packagist.org/packages/darryldecode/cart)
+[![Lisans](https://poser.pugx.org/darryldecode/cart/license.svg)](https://packagist.org/packages/darryldecode/cart)
+Laravel Framework için Bir Alışveriş Sepeti Uygulaması
 
-## QUICK PARTIAL DEMO
+## HIZLI KISIMSEL DEMO
 
 Demo: https://shoppingcart-demo.darrylfernandez.com/cart
 
-Git repo of the demo: https://github.com/darryldecode/laravelshoppingcart-demo
+Demo'nun Git deposu: https://github.com/darryldecode/laravelshoppingcart-demo
 
-## INSTALLATION
+## KURULUM
 
-Install the package through [Composer](http://getcomposer.org/).
+Paketi [Composer](http://getcomposer.org/) aracılığıyla kurun.
 
-For Laravel 5.1~:
+Laravel 5.1~ için:
 `composer require "darryldecode/cart:~2.0"`
 
-For Laravel 5.5, 5.6, or 5.7~, 9:
+Laravel 5.5, 5.6 veya 5.7~, 9 için:
 
-```composer require "darryldecode/cart:~4.0"``` or 
-```composer require "darryldecode/cart"```
+`composer require "darryldecode/cart:~4.0"` veya
+`composer require "darryldecode/cart"`
 
-## CONFIGURATION
+## YAPILANDIRMA
 
-1. Open config/app.php and add this line to your Service Providers Array.
+1. config/app.php dosyasını açın ve bu satırı Hizmet Sağlayıcılar Dizisine ekleyin.
 
 ```php
 Darryldecode\Cart\CartServiceProvider::class
+
 ```
 
-2. Open config/app.php and add this line to your Aliases
+2. config/app.php dosyasını açın ve bu satırı Takma Adlara (Aliases) ekleyin
 
 ```php
   'Cart' => Darryldecode\Cart\Facades\CartFacade::class
 ```
 
-3. Optional configuration file (useful if you plan to have full control)
+3. İsteğe bağlı yapılandırma dosyası (tam kontrol sahibi olmayı planlıyorsanız)
 
 ```php
 php artisan vendor:publish --provider="Darryldecode\Cart\CartServiceProvider" --tag="config"
@@ -45,85 +46,82 @@ php artisan vendor:publish --provider="Darryldecode\Cart\CartServiceProvider" --
 
 ## HOW TO USE
 
--   [Quick Usage](#usage-usage-example)
--   [Usage](#usage)
--   [Conditions](#conditions)
--   [Items](#items)
--   [Associating Models](#associating-models)
--   [Instances](#instances)
--   [Exceptions](#exceptions)
--   [Events](#events)
--   [Format Response](#format)
--   [Examples](#examples)
--   [Using Different Storage](#storage)
--   [License](#license)
+- [Quick Usage](#usage-usage-example)
+- [Usage](#usage)
+- [Conditions](#conditions)
+- [Items](#items)
+- [Associating Models](#associating-models)
+- [Instances](#instances)
+- [Exceptions](#exceptions)
+- [Events](#events)
+- [Format Response](#format)
+- [Examples](#examples)
+- [Using Different Storage](#storage)
+- [License](#license)
 
 ## Quick Usage Example
 
 ```php
-// Quick Usage with the Product Model Association & User session binding
+// Ürün Model İlişkilendirmesi ve Kullanıcı oturum bağlamasıyla Hızlı Kullanım
 
-$Product = Product::find($productId); // assuming you have a Product model with id, name, description & price
-$rowId = 456; // generate a unique() row ID
-$userID = 2; // the user ID to bind the cart contents
+$Urun = Urun::find($urunId); // varsayılan olarak id, ad, açıklama ve fiyat özellikleri olan bir Urun modeliniz olduğunu varsayalım
+$rowId = 456; // benzersiz bir() satır kimliği oluşturun
+$kullaniciID = 2; // sepet içeriğini bağlamak için kullanıcı kimliği
 
-// add the product to cart
-\Cart::session($userID)->add(array(
+// ürünü sepete ekle
+\Cart::session($kullaniciID)->add(array(
     'id' => $rowId,
-    'name' => $Product->name,
-    'price' => $Product->price,
+    'name' => $Urun->ad,
+    'price' => $Urun->fiyat,
     'quantity' => 4,
     'attributes' => array(),
-    'associatedModel' => $Product
+    'associatedModel' => $Urun
 ));
 
-// update the item on cart
-\Cart::session($userID)->update($rowId,[
+// sepet üzerindeki öğeyi güncelle
+\Cart::session($kullaniciID)->update($rowId,[
 	'quantity' => 2,
 	'price' => 98.67
 ]);
 
-// delete an item on cart
-\Cart::session($userID)->remove($rowId);
+// sepetten öğeyi sil
+\Cart::session($kullaniciID)->remove($rowId);
 
-// view the cart items
-$items = \Cart::getContent();
-foreach($items as $row) {
+// sepet öğelerini görüntüle
+$urunler = \Cart::getContent();
+foreach($urunler as $satir) {
 
-	echo $row->id; // row ID
-	echo $row->name;
-	echo $row->qty;
-	echo $row->price;
+	echo $satir->id; // satır kimliği
+	echo $satir->name;
+	echo $satir->qty;
+	echo $satir->price;
 	
-	echo $item->associatedModel->id; // whatever properties your model have
-        echo $item->associatedModel->name; // whatever properties your model have
-        echo $item->associatedModel->description; // whatever properties your model have
+	echo $satir->associatedModel->id; // modelinizin sahip olduğu özellikler
+    echo $satir->associatedModel->ad; // modelinizin sahip olduğu özellikler
+    echo $satir->associatedModel->açıklama; // modelinizin sahip olduğu özellikler
 }
 
-// FOR FULL USAGE, SEE BELOW..
+// TAM KULLANIM İÇİN AŞAĞIYA BAKIN..
+
 ```
 
 ## Usage
 
 ### IMPORTANT NOTE!
 
-By default, the cart has a default sessionKey that holds the cart data. This
-also serves as a cart unique identifier which you can use to bind a cart to a specific user.
-To override this default session Key, you will just simply call the `\Cart::session($sessionKey)` method
-BEFORE ANY OTHER METHODS!!.
+Varsayılan olarak, sepet, sepet verilerini tutan varsayılan bir oturum anahtarı olan "sessionKey"e sahiptir. Bu aynı zamanda bir sepeti belirli bir kullanıcıya bağlamak için kullanabileceğiniz benzersiz bir sepet tanımlayıcısı olarak hizmet eder. Bu varsayılan oturum anahtarını geçersiz kılmak için, HERHANGİ BİR BAŞKA YÖNTEM ÇAĞRISINDAN ÖNCE \Cart::session($sessionKey) yöntemini basitçe çağırmanız gerekir.
 
-Example:
+Örnek:
 
 ```php
-$userId // the current login user id
+$userId // mevcut giriş yapmış kullanıcının kimliği
 
-// This tells the cart that we only need or manipulate
-// the cart data of a specific user. It doesn't need to be $userId,
-// you can use any unique key that represents a unique to a user or customer.
-// basically this binds the cart to a specific user.
+// Bu, sepete yalnızca belirli bir kullanıcının sepet verilerine ihtiyacımız veya bunları manipüle etmemiz gerektiğini söyler.
+// Bu, $userId olması gerekmez, kullanıcıyı veya müşteriyi temsil eden herhangi bir benzersiz anahtar kullanabilirsiniz.
+// Temel olarak, bu sepeti belirli bir kullanıcıya bağlar.
 \Cart::session($userId);
 
-// then followed by the normal cart usage
+// ardından normal sepet kullanımı gelir
 \Cart::add();
 \Cart::update();
 \Cart::remove();
@@ -132,18 +130,19 @@ $userId // the current login user id
 \Cart::getSubTotal();
 \Cart::getSubTotalWithoutConditions();
 \Cart::addItemCondition($productID, $coupon101);
-// and so on..
+// ve benzeri..
+
 ```
 
-See More Examples below:
+Aşağıda Daha Fazla Örnek:
 
-Adding Item on Cart: **Cart::add()**
+Sepete Ürün Ekleme: **Cart::add()**
 
-There are several ways you can add items on your cart, see below:
+Sepete ürün eklemenin birkaç yolu bulunmaktadır, aşağıda görebilirsiniz:
 
 ```php
 /**
- * add item to the cart, it can be an array or multi dimensional array
+ * Sepete ürün ekler, dizi veya çok boyutlu dizi olabilir
  *
  * @param string|array $id
  * @param string $name
@@ -155,144 +154,143 @@ There are several ways you can add items on your cart, see below:
  * @throws InvalidItemException
  */
 
- # ALWAYS REMEMBER TO BIND THE CART TO A USER BEFORE CALLING ANY CART FUNCTION
- # SO CART WILL KNOW WHO'S CART DATA YOU WANT TO MANIPULATE. SEE IMPORTANT NOTICE ABOVE.
- # EXAMPLE: \Cart::session($userId); then followed by cart normal usage.
- 
- # NOTE:
- # the 'id' field in adding a new item on cart is not intended for the Model ID (example Product ID)
- # instead make sure to put a unique ID for every unique product or product that has it's own unique prirce, 
- # because it is used for updating cart and how each item on cart are segregated during calculation and quantities. 
- # You can put the model_id instead as an attribute for full flexibility.
- # Example is that if you want to add same products on the cart but with totally different attribute and price.
- # If you use the Product's ID as the 'id' field in cart, it will result to increase in quanity instead
- # of adding it as a unique product with unique attribute and price.
+ # HER ZAMAN HERHANGİ BİR SEPET FONKSİYONUNU ÇAĞIRMADAN ÖNCE SEPETİ BİR KULLANICIYA BAĞLAMAYI UNUTMAYIN
+ # BÖYLECE SEPET, HANGİ KULLANICININ SEPET VERİSİNİ MANİPÜLE ETMEK İSTEDİĞİNİ BİLECEKTİR. YUKARIDAKİ ÖNEMLİ NOTU GÖRÜNTÜLEYİN.
+ # ÖRNEK: \Cart::session($userId); ardından normal sepet kullanımına devam edebilirsiniz.
 
-// Simplest form to add item on your cart
-Cart::add(455, 'Sample Item', 100.99, 2, array());
+ # NOT:
+ # Yeni bir öğe sepete eklerken 'id' alanı Model Kimliği (örneğin Ürün Kimliği) için değildir.
+ # Bunun yerine, her benzersiz ürün veya kendi benzersiz fiyatına sahip ürün için benzersiz bir kimlik eklemelisiniz,
+ # çünkü bu, sepeti güncelleme ve sepetteki her bir öğenin nasıl hesaplandığı ve miktarlarının nasıl ayrıldığı konusunda kullanılır.
+ # Tam esneklik için model_id'yi bir öznitelik olarak ekleyebilirsiniz.
+ # Örnek olarak, aynı ürünleri farklı özellikler ve fiyatlarla sepete eklemek istiyorsanız.
+ # Ürün Kimliğini sepetin 'id' alanına koyarsanız, bunun yerine miktarın artması sonucu oluşur
+ # benzersiz bir ürün olarak eklemek yerine.
 
-// array format
+// En basit haliyle öğe ekleme
+Cart::add(455, 'Örnek Ürün', 100.99, 2, array());
+
+// Dizi formatı
 Cart::add(array(
-    'id' => 456, // inique row ID
-    'name' => 'Sample Item',
+    'id' => 456, // benzersiz satır kimliği
+    'name' => 'Örnek Ürün',
     'price' => 67.99,
     'quantity' => 4,
     'attributes' => array()
 ));
 
-// add multiple items at one time
+// Aynı anda birden çok öğe eklemek
 Cart::add(array(
   array(
       'id' => 456,
-      'name' => 'Sample Item 1',
+      'name' => 'Örnek Ürün 1',
       'price' => 67.99,
       'quantity' => 4,
       'attributes' => array()
   ),
   array(
       'id' => 568,
-      'name' => 'Sample Item 2',
+      'name' => 'Örnek Ürün 2',
       'price' => 69.25,
       'quantity' => 4,
       'attributes' => array(
         'size' => 'L',
-        'color' => 'blue'
+        'color' => 'mavi'
       )
   ),
 ));
 
-// add cart items to a specific user
-$userId = auth()->user()->id; // or any string represents user identifier
+// Sepete öğeler eklemek için belirli bir kullanıcıya öğeler eklemek
+$userId = auth()->user()->id; // veya kullanıcı kimliğini temsil eden herhangi bir dize
 Cart::session($userId)->add(array(
-    'id' => 456, // inique row ID
-    'name' => 'Sample Item',
+    'id' => 456, // benzersiz satır kimliği
+    'name' => 'Örnek Ürün',
     'price' => 67.99,
     'quantity' => 4,
     'attributes' => array(),
-    'associatedModel' => $Product
+    'associatedModel' => $Ürün
 ));
 
-// NOTE:
-// Please keep in mind that when adding an item on cart, the "id" should be unique as it serves as
-// row identifier as well. If you provide same ID, it will assume the operation will be an update to its quantity
-// to avoid cart item duplicates
+// NOT:
+// Lütfen unutmayın ki bir öğe sepete eklerken, "id" benzersiz olmalıdır çünkü satır kimliği olarak hizmet eder.
+// Aynı ID'yi sağlarsanız, işlemin miktarını güncellemek olarak kabul eder,
+// sepet öğesi yinelenmelerini önlemek için
 ```
+Bir öğeyi sepet üzerinde güncelleme: Cart::update()
 
-Updating an item on a cart: **Cart::update()**
-
-Updating an item on a cart is very simple:
+Sepet üzerindeki bir öğeyi güncellemek çok basittir:
 
 ```php
 /**
- * update a cart
+ * Sepeti günceller
  *
- * @param $id (the item ID)
- * @param array $data
+ * @param $id (öğe Kimliği)
+ * @param array $veri
  *
- * the $data will be an associative array, you don't need to pass all the data, only the key value
- * of the item you want to update on it
+ * $veri, ilişkilendirilmiş bir dizi olacak, tüm verileri iletmek zorunda değilsiniz, sadece güncellemek istediğiniz öğenin
+ * anahtar-değer çiftini iletebilirsiniz
  */
 
 Cart::update(456, array(
-  'name' => 'New Item Name', // new item name
-  'price' => 98.67, // new item price, price can also be a string format like so: '98.67'
+  'name' => 'Yeni Ürün Adı', // yeni öğe adı
+  'price' => 98.67, // yeni öğe fiyatı, fiyat ayrıca '98.67' gibi bir dize formatında da olabilir
 ));
 
-// you may also want to update a product's quantity
+// ayrıca bir ürünün miktarını güncellemek isteyebilirsiniz
 Cart::update(456, array(
-  'quantity' => 2, // so if the current product has a quantity of 4, another 2 will be added so this will result to 6
+  'quantity' => 2, // böylece mevcut ürünün miktarı 4 ise, 2 daha eklenir ve bu 6'ya ulaşır
 ));
 
-// you may also want to update a product by reducing its quantity, you do this like so:
+// ayrıca ürünün miktarını azaltarak güncellemek isteyebilirsiniz, bunu aşağıdaki gibi yaparsınız:
 Cart::update(456, array(
-  'quantity' => -1, // so if the current product has a quantity of 4, it will subtract 1 and will result to 3
+  'quantity' => -1, // böylece mevcut ürünün miktarı 4 ise, 1 çıkarır ve sonuç olarak 3 olur
 ));
 
-// NOTE: as you can see by default, the quantity update is relative to its current value
-// if you want to just totally replace the quantity instead of incrementing or decrementing its current quantity value
-// you can pass an array in quantity value like so:
+// NOT: Gördüğünüz gibi, varsayılan olarak miktar güncellemesi, mevcut değerine göre göreceli olarak yapılır
+// mevcut miktar değerini artırmak veya azaltmak yerine miktarı tamamen değiştirmek istiyorsanız
+// miktar değeri olarak bir dizi geçebilirsiniz, örneğin:
 Cart::update(456, array(
   'quantity' => array(
       'relative' => false,
       'value' => 5
   ),
 ));
-// so with that code above as relative is flagged as false, if the item's quantity before is 2 it will now be 5 instead of
-// 5 + 2 which results to 7 if updated relatively..
+// yukarıdaki kodla, relative değeri false olarak işaretlendiğinde, öğenin miktarı önce 2 ise, şimdi 5 olur 2 + 5 yerine
+// göreceli olarak güncellendiğinde 7 olur.
 
-// updating a cart for a specific user
-$userId = auth()->user()->id; // or any string represents user identifier
+// belirli bir kullanıcı için sepeti güncelleme
+$userId = auth()->user()->id; // veya kullanıcı kimliğini temsil eden herhangi bir dize
 Cart::session($userId)->update(456, array(
-  'name' => 'New Item Name', // new item name
-  'price' => 98.67, // new item price, price can also be a string format like so: '98.67'
+  'name' => 'Yeni Ürün Adı', // yeni öğe adı
+  'price' => 98.67, // yeni öğe fiyatı, fiyat ayrıca '98.67' gibi bir dize formatında da olabilir
 ));
+
 ```
+Bir öğeyi sepetten kaldırma: Cart::remove()
 
-Removing an item on a cart: **Cart::remove()**
-
-Removing an item on a cart is very easy:
+Bir öğeyi sepetten kaldırmak çok kolaydır:
 
 ```php
 /**
- * removes an item on cart by item ID
+ * Sepetteki bir öğeyi öğe Kimliği ile kaldırır
  *
  * @param $id
  */
 
 Cart::remove(456);
 
-// removing cart item for a specific user's cart
-$userId = auth()->user()->id; // or any string represents user identifier
+// Belirli bir kullanıcının sepetinden öğe kaldırma
+$userId = auth()->user()->id; // veya kullanıcı kimliğini temsil eden herhangi bir dize
 Cart::session($userId)->remove(456);
+
 ```
 
-Getting an item on a cart: **Cart::get()**
+Bir sepet öğesini almak için: **Cart::get()**
 
 ```php
-
 /**
- * get an item on a cart by item ID
- * if item ID is not found, this will return null
+ * Bir öğeyi öğe Kimliği ile sepetten alır
+ * Eğer öğe Kimliği bulunamazsa, null döner
  *
  * @param $itemId
  * @return null|array
@@ -302,321 +300,331 @@ $itemId = 456;
 
 Cart::get($itemId);
 
-// You can also get the sum of the Item multiplied by its quantity, see below:
-$summedPrice = Cart::get($itemId)->getPriceSum();
+// Aynı zamanda Öğenin miktarıyla çarpılmış toplam fiyatını da alabilirsiniz, aşağıda görüldüğü gibi:
+$toplamFiyat = Cart::get($itemId)->getPriceSum();
 
-// get an item on a cart by item ID for a specific user's cart
-$userId = auth()->user()->id; // or any string represents user identifier
+// Belirli bir kullanıcının sepetinde öğeyi öğe Kimliği ile almak için:
+$userId = auth()->user()->id; // veya kullanıcı kimliğini temsil eden herhangi bir dize
 Cart::session($userId)->get($itemId);
+
 ```
 
-Getting cart's contents and count: **Cart::getContent()**
+Sepetin içeriğini ve öğe sayısını almak için: **Cart::getContent()**
 
 ```php
 
 /**
- * get the cart
+ * Sepeti alır
  *
  * @return CartCollection
  */
 
 $cartCollection = Cart::getContent();
 
-// NOTE: Because cart collection extends Laravel's Collection
-// You can use methods you already know about Laravel's Collection
-// See some of its method below:
+// NOT: Çünkü sepet koleksiyonu Laravel'in Koleksiyonunu genişletir
+// Zaten bildiğiniz Laravel Koleksiyonu yöntemlerini kullanabilirsiniz
+// Aşağıda bazı yöntemlerini görebilirsiniz:
 
-// count carts contents
+// sepet içeriğini sayma
 $cartCollection->count();
 
-// transformations
+// dönüşümler
 $cartCollection->toArray();
 $cartCollection->toJson();
 
-// Getting cart's contents for a specific user
-$userId = auth()->user()->id; // or any string represents user identifier
+// Belirli bir kullanıcının sepet içeriğini almak için
+$userId = auth()->user()->id; // veya kullanıcı kimliğini temsil eden herhangi bir dize
 Cart::session($userId)->getContent($itemId);
+
 ```
 
-Check if cart is empty: **Cart::isEmpty()**
+Sepetin boş olup olmadığını kontrol etmek için: **Cart::isEmpty()**
 
 ```php
 /**
-* check if cart is empty
+* Sepetin boş olup olmadığını kontrol eder
 *
 * @return bool
 */
 Cart::isEmpty();
 
-// Check if cart's contents is empty for a specific user
-$userId = auth()->user()->id; // or any string represents user identifier
+// Belirli bir kullanıcının sepet içeriğinin boş olup olmadığını kontrol etme
+$userId = auth()->user()->id; // veya kullanıcı kimliğini temsil eden herhangi bir dize
 Cart::session($userId)->isEmpty();
+
 ```
 
-Get cart total quantity: **Cart::getTotalQuantity()**
+Sepetin toplam miktarını almak için: **Cart::getTotalQuantity()**
 
 ```php
 /**
-* get total quantity of items in the cart
+* Sepetteki toplam öğe miktarını alır
 *
 * @return int
 */
 $cartTotalQuantity = Cart::getTotalQuantity();
 
-// for a specific user
+// Belirli bir kullanıcı için
 $cartTotalQuantity = Cart::session($userId)->getTotalQuantity();
+
 ```
 
-Get cart subtotal: **Cart::getSubTotal()**
+Sepetin ara toplamını almak için: **Cart::getSubTotal()**
 
 ```php
 /**
-* get cart sub total
+* Sepetin ara toplamını alır
 *
 * @return float
 */
 $subTotal = Cart::getSubTotal();
 
-// for a specific user
+// Belirli bir kullanıcı için
 $subTotal = Cart::session($userId)->getSubTotal();
+
+// Koşullar olmadan sepet ara toplamını almak için
+$subTotalWithoutConditions = Cart::getSubTotalWithoutConditions();
+
 ```
 
-Get cart subtotal with out conditions: **Cart::getSubTotalWithoutConditions()**
+ Koşullar olmaksızın sepetin ara toplamını alır **Cart::getSubTotalWithoutConditions()**
 
 ```php
 /**
-* get cart sub total with out conditions
+* Koşullar olmaksızın sepetin ara toplamını alır
 *
 * @param bool $formatted
 * @return float
 */
 $subTotalWithoutConditions = Cart::getSubTotalWithoutConditions();
 
-// for a specific user
+// Belirli bir kullanıcı için
 $subTotalWithoutConditions = Cart::session($userId)->getSubTotalWithoutConditions();
+
 ```
 
-Get cart total: **Cart::getTotal()**
+Sepet toplamını alır: **Cart::getTotal()**
 
 ```php
 /**
- * the new total in which conditions are already applied
+ * Koşulların zaten uygulandığı yeni toplamı alır
  *
  * @return float
  */
 $total = Cart::getTotal();
 
-// for a specific user
+// Belirli bir kullanıcı için
 $total = Cart::session($userId)->getTotal();
-```
 
-Clearing the Cart: **Cart::clear()**
+```
+Sepeti Temizleme: **Cart::clear()**
 
 ```php
 /**
-* clear cart
+* Sepeti temizler
 *
 * @return void
 */
 Cart::clear();
 Cart::session($userId)->clear();
+
 ```
 
 ## Conditions
 
-Laravel Shopping Cart supports cart conditions.
-Conditions are very useful in terms of (coupons,discounts,sale,per-item sale and discounts etc.)
-See below carefully on how to use conditions.
+* Laravel Alışveriş Sepeti koşulları destekler.
+* Koşullar, (kuponlar, indirimler, indirimli satışlar, ürün bazlı indirimler vb.) açısından çok kullanışlıdır.
+* Aşağıdaki örneği dikkatlice inceleyin, nasıl kullanılacağını görebilirsiniz.
 
-Conditions can be added on:
+Koşullar aşağıdaki şekillerde eklenir:
 
-1.) Whole Cart Value bases
+1.) Tüm Sepet Değeri Temeline Göre
 
-2.) Per-Item Bases
+2.) Her Öğe Temeline Göre
 
-First let's add a condition on a Cart Bases:
+Öncelikle Sepet Temeline Bir Koşul Ekleyelim:
 
-There are also several ways of adding a condition on a cart:
-NOTE:
+Sepet üzerine bir koşul eklemek için birkaç yöntem vardır:
+NOT:
 
-When adding a condition on a cart bases, the 'target' should have value of 'subtotal' or 'total'.
-If the target is "subtotal" then this condition will be applied to subtotal.
-If the target is "total" then this condition will be applied to total.
-The order of operation also during calculation will vary on the order you have added the conditions.
+Sepet temelinde bir koşul eklerken, 'target' değeri 'subtotal' veya 'total' olmalıdır.
+Eğer 'target' "subtotal" ise, bu koşul ara toplama uygulanacaktır.
+Eğer 'target' "total" ise, bu koşul toplama uygulanacaktır.
+Koşulları eklerken işlem sırası, eklediğiniz koşulların sırasına göre değişecektir.
 
-Also, when adding conditions, the 'value' field will be the bases of calculation. You can change this order
-by adding 'order' parameter in CartCondition.
+Ayrıca, koşulları eklerken 'value' alanı hesaplamanın temelini oluşturacaktır. Bu sırayı değiştirebilirsiniz
+CartCondition içinde 'order' parametresini ekleyerek.
 
 ```php
 
-// add single condition on a cart bases
+// Sepet temeline tek bir koşul eklemek
 $condition = new \Darryldecode\Cart\CartCondition(array(
-    'name' => 'VAT 12.5%',
+    'name' => 'KDV 12.5%',
     'type' => 'tax',
-    'target' => 'subtotal', // this condition will be applied to cart's subtotal when getSubTotal() is called.
+    'target' => 'subtotal', // bu koşul, getSubTotal() çağrıldığında sepetin ara toplamına uygulanır.
     'value' => '12.5%',
-    'attributes' => array( // attributes field is optional
-    	'description' => 'Value added tax',
-    	'more_data' => 'more data here'
+    'attributes' => array(
+        'description' => 'Katma Değer Vergisi',
+        'more_data' => 'burada daha fazla veri'
     )
 ));
 
 Cart::condition($condition);
-Cart::session($userId)->condition($condition); // for a speicifc user's cart
+Cart::session($userId)->condition($condition); // belirli bir kullanıcının sepeti için
 
-// or add multiple conditions from different condition instances
+// veya farklı koşul örneklerinden birden fazla koşulu eklemek
 $condition1 = new \Darryldecode\Cart\CartCondition(array(
-    'name' => 'VAT 12.5%',
+    'name' => 'KDV 12.5%',
     'type' => 'tax',
-    'target' => 'subtotal', // this condition will be applied to cart's subtotal when getSubTotal() is called.
+    'target' => 'subtotal', // bu koşul, getSubTotal() çağrıldığında sepetin ara toplamına uygulanır.
     'value' => '12.5%',
     'order' => 2
 ));
 $condition2 = new \Darryldecode\Cart\CartCondition(array(
-    'name' => 'Express Shipping $15',
+    'name' => 'Express Kargo 15 TL',
     'type' => 'shipping',
-    'target' => 'subtotal', // this condition will be applied to cart's subtotal when getSubTotal() is called.
+    'target' => 'subtotal', // bu koşul, getSubTotal() çağrıldığında sepetin ara toplamına uygulanır.
     'value' => '+15',
     'order' => 1
 ));
 Cart::condition($condition1);
 Cart::condition($condition2);
 
-// Note that after adding conditions that are targeted to be applied on subtotal, the result on getTotal()
-// will also be affected as getTotal() depends in getSubTotal() which is the subtotal.
+// Dikkat edin ki, ara toplama uygulanan koşullar ekledikten sonra, getTotal() üzerindeki sonuç da etkilenecektir,
+// çünkü getTotal(), ara toplama bağlıdır, ki bu da ara toplamıdır.
 
-// add condition to only apply on totals, not in subtotal
-$condition = new \Darryldecode\Cart\CartCondition(array(
-    'name' => 'Express Shipping $15',
+// yalnızca toplamlara uygulanacak koşul eklemek
+$shippingCondition = new \Darryldecode\Cart\CartCondition(array(
+    'name' => 'Express Kargo 15 TL',
     'type' => 'shipping',
-    'target' => 'total', // this condition will be applied to cart's total when getTotal() is called.
+    'target' => 'total', // bu koşul, getTotal() çağrıldığında sepetin toplamına uygulanır.
     'value' => '+15',
-    'order' => 1 // the order of calculation of cart base conditions. The bigger the later to be applied.
+    'order' => 1 // hesaplama sırası kart tabanlı koşulların sırası. Sıra ne kadar büyükse, daha sonra uygulanır.
 ));
-Cart::condition($condition);
+Cart::condition($shippingCondition);
 
-// The property 'order' lets you control the sequence of conditions when calculated. Also it lets you add different conditions through for example a shopping process with multiple
-// pages and still be able to set an order to apply the conditions. If no order is defined defaults to 0
+// 'order' özelliği hesaplamada koşulların sırasını kontrol etmenizi sağlar. Aynı zamanda birden fazla koşulu eklemek
+// için farklı sayfalar ile örneğin çok sayfalı bir alışveriş sürecinde sırayı ayarlamak için kullanılabilir.
+// Sıra tanımlanmadığında varsayılan olarak 0 olarak kabul edilir.
 
-// NOTE!! On current version, 'order' parameter is only applicable for conditions for cart bases. It does not support on per item conditions.
+// NOT!! Mevcut sürümde, 'order' parametresi yalnızca sepet temelindeki koşullar için geçerlidir. Her öğe bazlı koşullarda desteklenmez.
 
-// or add multiple conditions as array
+// veya birden fazla koşulu dizi olarak eklemek
 Cart::condition([$condition1, $condition2]);
 
-// To get all applied conditions on a cart, use below:
+// Sepete uygulanan tüm koşulları almak için aşağıdakini kullanın:
 $cartConditions = Cart::getConditions();
-foreach($cartConditions as $condition)
-{
-    $condition->getTarget(); // the target of which the condition was applied
-    $condition->getName(); // the name of the condition
-    $condition->getType(); // the type
-    $condition->getValue(); // the value of the condition
-    $condition->getOrder(); // the order of the condition
-    $condition->getAttributes(); // the attributes of the condition, returns an empty [] if no attributes added
+foreach ($cartConditions as $cartCondition) {
+    $cartCondition->getTarget(); // koşulun uygulandığı hedef
+    $cartCondition->getName(); // koşulun adı
+    $cartCondition->getType(); // tür
+    $cartCondition->getValue(); // koşulun değeri
+    $cartCondition->getOrder(); // koşulun sırası
+    $cartCondition->getAttributes(); // koşulun özellikleri, özellik eklenmediyse boş [] döner
 }
 
-// You can also get a condition that has been applied on the cart by using its name, use below:
-$condition = Cart::getCondition('VAT 12.5%');
-$condition->getTarget(); // the target of which the condition was applied
-$condition->getName(); // the name of the condition
-$condition->getType(); // the type
-$condition->getValue(); // the value of the condition
-$condition->getAttributes(); // the attributes of the condition, returns an empty [] if no attributes added
+// Ayrıca koşulun adını kullanarak sepette uygulanan bir koşulu alabilirsiniz, aşağıdaki gibi kullanın:
+$conditionByName = Cart::getCondition('KDV 12.5%');
+$conditionByName->getTarget(); // koşulun uygulandığı hedef
+$conditionByName->getName(); // koşulun adı
+$conditionByName->getType(); // tür
+$conditionByName->getValue(); // koşulun değeri
+$conditionByName->getAttributes(); // koşulun özellikleri, özellik eklenmediyse boş [] döner
 
-// You can get the conditions calculated value by providing the subtotal, see below:
+// Koşulların hesaplanmış değerini ara toplamı sağlayarak alabilirsiniz, aşağıda görüldüğü gibi:
 $subTotal = Cart::getSubTotal();
-$condition = Cart::getCondition('VAT 12.5%');
-$conditionCalculatedValue = $condition->getCalculatedValue($subTotal);
+$calculatedValue = $conditionByName->getCalculatedValue($subTotal);
+
 ```
 
-> NOTE: All cart based conditions should be added to cart's conditions before calling **Cart::getTotal()**
-> and if there are also conditions that are targeted to be applied to subtotal, it should be added to cart's conditions
-> before calling **Cart::getSubTotal()**
+> NOT: Tüm sepet tabanlı koşullar, **Cart::getTotal()** çağrılmadan önce sepetin koşullarına eklenmelidir.
+> ve ayrıca ara toplama uygulanması hedeflenen koşullar varsa, bunlar da sepetin koşullarına eklenmelidir.
+>  **Cart::getSubTotal()**  çağrılmadan önce.
 
 ```php
-$cartTotal = Cart::getSubTotal(); // the subtotal with the conditions targeted to "subtotal" applied
-$cartTotal = Cart::getTotal(); // the total with the conditions targeted to "total" applied
-$cartTotal = Cart::session($userId)->getSubTotal(); // for a specific user's cart
-$cartTotal = Cart::session($userId)->getTotal(); // for a specific user's cart
+$araToplamKosullu = Cart::getSubTotal(); // "ara toplama" hedefine uygulanan koşullarla
+$toplamKosullu = Cart::getTotal(); // "toplam" hedefine uygulanan koşullarla
+$araToplamKosulluKullanici = Cart::session($userId)->getSubTotal(); // belirli bir kullanıcının sepeti için
+$toplamKosulluKullanici = Cart::session($userId)->getTotal(); // belirli bir kullanıcının sepeti için
+
 ```
 
-Next is the Condition on Per-Item Bases.
+Sıradaki konu Öğe Temeline Koşullardır.
 
-This is very useful if you have coupons to be applied specifically on an item and not on the whole cart value.
+Bu, özellikle bir kupona yalnızca bir öğe üzerinde değil tüm sepet değeri üzerinde uygulanmasını istediğiniz durumlar için çok kullanışlıdır.
 
-> NOTE: When adding a condition on a per-item bases, the 'target' parameter is not needed or can be omitted.
-> unlike when adding conditions or per cart bases.
+> NOT: Öğe temelinde bir koşul eklerken, 'target' parametresine ihtiyaç yoktur veya atlanabilir.
+> sepet temelinde koşullar eklerken olduğu gibi.
 
-Now let's add condition on an item.
+Şimdi bir öğe üzerine koşul ekleyelim:.
 
 ```php
 
-// lets create first our condition instance
+// Önce koşul örneğimizi oluşturalım
 $saleCondition = new \Darryldecode\Cart\CartCondition(array(
-            'name' => 'SALE 5%',
-            'type' => 'tax',
-            'value' => '-5%',
-        ));
+    'name' => 'İNDİRİM 5%',
+    'type' => 'tax',
+    'value' => '-5%',
+));
 
-// now the product to be added on cart
-$product = array(
-            'id' => 456,
-            'name' => 'Sample Item 1',
-            'price' => 100,
-            'quantity' => 1,
-            'attributes' => array(),
-            'conditions' => $saleCondition
-        );
+// Şimdi sepete eklenmesi gereken ürün
+$ürün = array(
+    'id' => 456,
+    'name' => 'Örnek Ürün 1',
+    'price' => 100,
+    'quantity' => 1,
+    'attributes' => array(),
+    'conditions' => $saleCondition
+);
 
-// finally add the product on the cart
-Cart::add($product);
+// Son olarak ürünü sepete ekleyin
+Cart::add($ürün);
 
-// you may also add multiple condition on an item
-$itemCondition1 = new \Darryldecode\Cart\CartCondition(array(
-    'name' => 'SALE 5%',
+// Bir öğeye birden fazla koşul da ekleyebilirsiniz
+$ürünKoşulu1 = new \Darryldecode\Cart\CartCondition(array(
+    'name' => 'İNDİRİM 5%',
     'type' => 'sale',
     'value' => '-5%',
 ));
-$itemCondition2 = new CartCondition(array(
-    'name' => 'Item Gift Pack 25.00',
+$ürünKoşulu2 = new \Darryldecode\Cart\CartCondition(array(
+    'name' => 'Ürün Hediye Paketi 25.00',
     'type' => 'promo',
     'value' => '-25',
 ));
-$itemCondition3 = new \Darryldecode\Cart\CartCondition(array(
-    'name' => 'MISC',
+$ürünKoşulu3 = new \Darryldecode\Cart\CartCondition(array(
+    'name' => 'MİSC',
     'type' => 'misc',
     'value' => '+10',
 ));
 
-$item = array(
-          'id' => 456,
-          'name' => 'Sample Item 1',
-          'price' => 100,
-          'quantity' => 1,
-          'attributes' => array(),
-          'conditions' => [$itemCondition1, $itemCondition2, $itemCondition3]
-      );
+$ürün = array(
+    'id' => 456,
+    'name' => 'Örnek Ürün 1',
+    'price' => 100,
+    'quantity' => 1,
+    'attributes' => array(),
+    'conditions' => [$ürünKoşulu1, $ürünKoşulu2, $ürünKoşulu3]
+);
 
-Cart::add($item);
+Cart::add($ürün);
+
 ```
 
-> NOTE: All cart per-item conditions should be added before calling **Cart::getSubTotal()**
+>NOT: Tüm sepet öğe başına koşullar, **Cart::getSubTotal()** çağrılmadan önce eklenmelidir.
 
-Then Finally you can call **Cart::getSubTotal()** to get the Cart sub total with the applied conditions on each of the items.
+Son olarak, her bir öğeye uygulanan koşullarla birlikte Sepet ara toplamını almak için **Cart::getSubTotal()** yöntemini çağırabilirsiniz.
 
 ```php
-// the subtotal will be calculated based on the conditions added that has target => "subtotal"
-// and also conditions that are added on per item
-$cartSubTotal = Cart::getSubTotal();
+// Ara toplam, hedefi "ara toplam" olan eklenen koşullara ve öğe başına eklenen koşullara göre hesaplanır
+$sepetAraToplamı = Cart::getSubTotal();
 ```
 
-Add condition to existing Item on the cart: **Cart::addItemCondition($productId, $itemCondition)**
+Mevcut bir öğeye koşul eklemek için: **Cart::addItemCondition($productId, $itemCondition)**
 
-Adding Condition to an existing Item on the cart is simple as well.
+Sepetteki mevcut bir öğeye koşul eklemek de oldukça basittir.
 
-This is very useful when adding new conditions on an item during checkout process like coupons and promo codes.
-Let's see the example how to do it:
-
+Bu, özellikle ödeme işlemi sırasında kuponlar ve promosyon kodları gibi yeni koşulları bir öğeye eklemek için çok kullanışlıdır.
+Nasıl yapılacağına dair örnek aşağıda verilmiştir:
 ```php
 $productID = 456;
 $coupon101 = new CartCondition(array(
@@ -628,108 +636,108 @@ $coupon101 = new CartCondition(array(
 Cart::addItemCondition($productID, $coupon101);
 ```
 
-Clearing Cart Conditions: **Cart::clearCartConditions()**
+Sepet Koşullarını Temizleme: **Cart::clearCartConditions()**
 
 ```php
 /**
-* clears all conditions on a cart,
-* this does not remove conditions that has been added specifically to an item/product.
-* If you wish to remove a specific condition to a product, you may use the method: removeItemCondition($itemId,$conditionName)
+* sepetin tüm koşullarını temizler,
+* bunlar özellikle bir öğeye/ürüne eklenen koşulları silmez.
+* Belirli bir öğeye ait bir koşulu kaldırmak isterseniz, removeItemCondition($itemId,$conditionName) yöntemini kullanabilirsiniz.
 *
 * @return void
 */
 Cart::clearCartConditions()
 ```
 
-Remove Specific Cart Condition: **Cart::removeCartCondition(\$conditionName)**
+Belirli Bir Sepet Koşulunu Kaldırma: **Cart::removeCartCondition($conditionName)**
 
 ```php
 /**
-* removes a condition on a cart by condition name,
-* this can only remove conditions that are added on cart bases not conditions that are added on an item/product.
-* If you wish to remove a condition that has been added for a specific item/product, you may
-* use the removeItemCondition(itemId, conditionName) method instead.
+* koşulu koşul adına göre bir sepetten kaldırır,
+* bununla yalnızca sepet tabanlı eklenen koşulları kaldırabilirsiniz, bir öğe/ürün için eklenen koşulları değil.
+* Bir öğe/ürün için eklenen bir koşulu kaldırmak isterseniz,
+* bunun yerine removeItemCondition(itemId, conditionName) yöntemini kullanabilirsiniz.
 *
 * @param $conditionName
 * @return void
 */
-$conditionName = 'Summer Sale 5%';
+$koşulAdı = 'Yaz İndirimi 5%';
 
-Cart::removeCartCondition($conditionName)
+Cart::removeCartCondition($koşulAdı);
 ```
 
-Remove Specific Item Condition: **Cart::removeItemCondition($itemId, $conditionName)**
+Belirli Bir Öğe Koşulunu Kaldırma: **Cart::removeItemCondition($itemId, $conditionName)**
 
 ```php
 /**
-* remove a condition that has been applied on an item that is already on the cart
+* sepete zaten eklenmiş bir öğeye uygulanmış bir koşulu kaldırır
 *
 * @param $itemId
 * @param $conditionName
 * @return bool
 */
-Cart::removeItemCondition($itemId, $conditionName)
+Cart::removeItemCondition($itemId, $koşulAdı);)
 ```
 
-Clear all Item Conditions: **Cart::clearItemConditions(\$itemId)**
+Tüm Öğe Koşullarını Temizleme: **Cart::clearItemConditions($itemId)**
 
 ```php
 /**
-* remove all conditions that has been applied on an item that is already on the cart
+* sepete zaten eklenmiş bir öğeye uygulanmış tüm koşulları kaldırır
 *
 * @param $itemId
 * @return bool
 */
-Cart::clearItemConditions($itemId)
+Cart::clearItemConditions($itemId);
 ```
 
-Get conditions by type: **Cart::getConditionsByType(\$type)**
+Türüne Göre Koşulları Al: **Cart::getConditionsByType($tip)**
 
 ```php
 /**
-* Get all the condition filtered by Type
-* Please Note that this will only return condition added on cart bases, not those conditions added
-* specifically on an per item bases
+* Tüm koşulları Türüne Göre Filtrelenmiş Halde Al
+* Lütfen unutmayın ki, bu yalnızca sepet temelinde eklenen koşulları döndürecektir, özellikle öğe bazında eklenen
+* koşulları döndürmeyecektir
 *
 * @param $type
 * @return CartConditionCollection
 */
-public function getConditionsByType($type)
+public function getConditionsByType($tip)
 ```
 
-Remove conditions by type: **Cart::removeConditionsByType(\$type)**
+Türüne Göre Koşulları Kaldır: **Cart::removeConditionsByType($tip)**
 
 ```php
 /**
-* Remove all the condition with the $type specified
-* Please Note that this will only remove condition added on cart bases, not those conditions added
-* specifically on an per item bases
+* Belirtilen $tip'e sahip tüm koşulları kaldırır
+* Lütfen unutmayın ki, bu yalnızca sepet temelinde eklenen koşulları kaldıracaktır, özellikle öğe bazında eklenen
+* koşulları kaldırmayacaktır
 *
 * @param $type
 * @return $this
 */
-public function removeConditionsByType($type)
+public function removeConditionsByType($tip)
 ```
 
 ## Items
 
-The method **Cart::getContent()** returns a collection of items.
+**Cart::getContent()** yöntemi öğelerin bir koleksiyonunu döndürür.
 
-To get the id of an item, use the property **\$item->id**.
+Bir öğenin kimliğini almak için **\$item->id** özelliğini kullanın.
 
-To get the name of an item, use the property **\$item->name**.
+Bir öğenin adını almak için **\$item->name** özelliğini kullanın.
 
-To get the quantity of an item, use the property **\$item->quantity**.
+Bir öğenin miktarını almak için **\$item->quantity** özelliğini kullanın.
 
-To get the attributes of an item, use the property **\$item->attributes**.
+Bir öğenin niteliklerini almak için **\$item->attributes** özelliğini kullanın.
 
-To get the price of a single item without the conditions applied, use the property **\$item->price**.
+Koşullar uygulanmadan tek bir öğenin fiyatını almak için **\$item->price** özelliğini kullanın.
 
-To get the subtotal of an item without the conditions applied, use the method **\$item->getPriceSum()**.
+Koşullar uygulanmadan bir öğenin ara toplamını almak için **\$item->getPriceSum()** yöntemini kullanın.
 
 ```php
 /**
-* get the sum of price
+* fiyatın toplamını al
 *
 * @return mixed|null
 */
@@ -737,13 +745,13 @@ public function getPriceSum()
 
 ```
 
-To get the price of a single item without the conditions applied, use the method
+Tek bir öğenin koşullar uygulanmadan fiyatını almak için yöntemi kullanın
 
 **\$item->getPriceWithConditions()**.
 
 ```php
 /**
-* get the single price in which conditions are already applied
+* Koşulların zaten uygulandığı tek fiyatı almak için
 *
 * @return mixed|null
 */
@@ -751,51 +759,52 @@ public function getPriceWithConditions()
 
 ```
 
-To get the subtotal of an item with the conditions applied, use the method
+Öğenin koşullar uygulanmış ara toplamını almak için yöntemi kullanın.
 
 **\$item->getPriceSumWithConditions()**
 
 ```php
 /**
-* get the sum of price in which conditions are already applied
+* Koşulların zaten uygulandığı fiyat toplamını almak için
 *
 * @return mixed|null
 */
 public function getPriceSumWithConditions()
 
+
 ```
 
-**NOTE**: When you get price with conditions applied, only the conditions assigned to the current item will be calculated.
-Cart conditions won't be applied to price.
+**NOTE**:Koşullar uygulanmış fiyatı aldığınızda, yalnızca mevcut öğeye atanan koşullar hesaplanır.
+Sepet koşulları fiyata uygulanmaz.
 
 ## Associating Models
 
-One can associate a cart item to a model. Let's say you have a `Product` model in your application. With the `associate()` method, you can tell the cart that an item in the cart, is associated to the `Product` model.
+Bir öğeyi bir modele bağlayabilirsiniz. Diyelim ki uygulamanızda bir `Product` modeliniz var. `associate()` yöntemi ile sepete, sepet içindeki bir öğenin `Product` modeli ile ilişkilendirildiğini belirtebilirsiniz.
 
-That way you can access your model using the property **\$item->model**.
+Bu şekilde modele **\$item->model** özelliği kullanarak erişebilirsiniz.
 
-Here is an example:
+İşte bir örnek:
 
 ```php
 
-// add the item to the cart.
-$cartItem = Cart::add(455, 'Sample Item', 100.99, 2, array())->associate('Product');
+// öğeyi sepete ekleyin.
+$sepetOgesi = Cart::add(455, 'Örnek Ürün', 100.99, 2, array())->associate('Product');
 
-// array format
+// dizi formatı
 Cart::add(array(
     'id' => 456,
-    'name' => 'Sample Item',
+    'name' => 'Örnek Ürün',
     'price' => 67.99,
     'quantity' => 4,
     'attributes' => array(),
     'associatedModel' => 'Product'
 ));
 
-// add multiple items at one time
+// bir seferde birden fazla öğe ekleyin
 Cart::add(array(
   array(
       'id' => 456,
-      'name' => 'Sample Item 1',
+      'name' => 'Örnek Ürün 1',
       'price' => 67.99,
       'quantity' => 4,
       'attributes' => array(),
@@ -803,207 +812,206 @@ Cart::add(array(
   ),
   array(
       'id' => 568,
-      'name' => 'Sample Item 2',
+      'name' => 'Örnek Ürün 2',
       'price' => 69.25,
       'quantity' => 4,
       'attributes' => array(
-        'size' => 'L',
-        'color' => 'blue'
+        'boyut' => 'L',
+        'renk' => 'mavi'
       ),
       'associatedModel' => 'Product'
   ),
 ));
 
-// Now, when iterating over the content of the cart, you can access the model.
+// Şimdi, sepet içeriğini dolaşırken modele erişebilirsiniz.
 foreach(Cart::getContent() as $row) {
-	echo 'You have ' . $row->qty . ' items of ' . $row->model->name . ' with description: "' . $row->model->description . '" in your cart.';
+	echo 'Sepetinizde ' . $row->qty . ' adet ' . $row->model->name . ' adlı ürününüz bulunuyor. Açıklama: "' . $row->model->description . '"';
 }
 ```
 
-**NOTE**: This only works when adding an item to cart.
+**NOTE**:Bu sadece bir öğeyi sepete eklerken çalışır.
 
 ## Instances
 
-You may also want multiple cart instances on the same page without conflicts.
-To do that,
+Aynı sayfada çakışmalar olmadan birden çok sepet örneği oluşturmanız gerekebilir.
+Bunu yapmak için,
 
-Create a new Service Provider and then on register() method, you can put this like so:
+Yeni bir Hizmet Sağlayıcı oluşturun ve ardından register() yöntemi içine şunu ekleyebilirsiniz:
 
 ```php
 $this->app['wishlist'] = $this->app->share(function($app)
-		{
-			$storage = $app['session']; // laravel session storage
-			$events = $app['events']; // laravel event handler
-			$instanceName = 'wishlist'; // your cart instance name
-			$session_key = 'AsASDMCks0ks1'; // your unique session key to hold cart items
+{
+$storage = $app['session']; // Laravel oturum depolama
+$events = $app['events']; // Laravel olay işleyici
+$instanceName = 'wishlist'; // sepet örneği adınız
+$session_key = 'AsASDMCks0ks1'; // öğeleri tutmak için benzersiz oturum anahtarınız
 
-			return new Cart(
-				$storage,
-				$events,
-				$instanceName,
-				$session_key
-			);
-		});
+		return new Cart(
+    $storage,
+    $events,
+    $instanceName,
+    $session_key
+);
 
-// for 5.4 or newer
+});
+
+// 5.4 veya daha yeni sürümler için
 use Darryldecode\Cart\Cart;
 use Illuminate\Support\ServiceProvider;
 
 class WishListProvider extends ServiceProvider
 {
-    /**
-     * Bootstrap the application services.
-     *
-     * @return void
-     */
-    public function boot()
-    {
-        //
-    }
-    /**
-     * Register the application services.
-     *
-     * @return void
-     */
-    public function register()
-    {
-        $this->app->singleton('wishlist', function($app)
-        {
-            $storage = $app['session'];
-            $events = $app['events'];
-            $instanceName = 'cart_2';
-            $session_key = '88uuiioo99888';
-            return new Cart(
-                $storage,
-                $events,
-                $instanceName,
-                $session_key,
-                config('shopping_cart')
-            );
-        });
-    }
+/**
+* Uygulama hizmetleri başlatın.
+*
+* @return void
+/
+public function boot()
+{
+//
+}
+/*
+* Uygulama hizmetlerini kaydedin.
+*
+* @return void
+*/
+public function register()
+{
+$this->app->singleton('wishlist', function($app)
+{
+$storage = $app['session'];
+$events = $app['events'];
+$instanceName = 'cart_2';
+$session_key = '88uuiioo99888';
+return new Cart(
+$storage,
+$events,
+$instanceName,
+$session_key,
+config('shopping_cart')
+);
+});
+}
 }
 ```
 
-IF you are having problem with multiple cart instance, please see the codes on
-this demo repo here: [DEMO](https://github.com/darryldecode/laravelshoppingcart-demo)
+Birden çok sepet örneği ile sorun yaşıyorsanız, lütfen bu demo deposundaki kodlara göz atın [DEMO](https://github.com/darryldecode/laravelshoppingcart-demo)
 
 ## Exceptions
 
-There are currently only two exceptions.
+Şu anda yalnızca iki istisna bulunmaktadır.
 
-| Exception                   | Description                                                               |
+| İstisna                   | Açıklama                                                                  |
 | --------------------------- | ------------------------------------------------------------------------- |
-| _InvalidConditionException_ | When there is an invalid field value during instantiating a new Condition |
-| _InvalidItemException_      | When a new product has invalid field values (id,name,price,quantity)      |
-| _UnknownModelException_     | When you try to associate a none existing model to a cart item.           |
+| _InvalidConditionException_ | Yeni bir Koşul oluşturulurken geçersiz bir alan değeri olduğunda           |
+| _InvalidItemException_      | Yeni bir ürünün geçersiz alan değerleri var (id,ad,fiyat,miktar)           |
+| _UnknownModelException_     | Bir sepet öğesine mevcut olmayan bir modeli ilişkilendirmeye çalıştığınızda |
 
 ## Events
 
-The cart has currently 9 events you can listen and hook some actons.
+Şu anda sepetin dinleyebileceğiniz ve bazı işlemler yapabileceğiniz 9 etkinliği bulunmaktadır.
 
-| Event                        | Fired                                  |
+| Etkinlik                        | Oluştuğunda                            |
 | ---------------------------- | -------------------------------------- |
-| cart.created(\$cart)         | When a cart is instantiated            |
-| cart.adding($items, $cart)   | When an item is attempted to be added  |
-| cart.added($items, $cart)    | When an item is added on cart          |
-| cart.updating($items, $cart) | When an item is being updated          |
-| cart.updated($items, $cart)  | When an item is updated                |
-| cart.removing($id, $cart)    | When an item is being remove           |
-| cart.removed($id, $cart)     | When an item is removed                |
-| cart.clearing(\$cart)        | When a cart is attempted to be cleared |
-| cart.cleared(\$cart)         | When a cart is cleared                 |
+| cart.created(\$cart)         | Bir sepet örneği oluşturulduğunda            |
+| cart.adding($items, $cart)   | Bir öğenin sepete eklenmeye çalışıldığında   |
+| cart.added($items, $cart)    | Bir öğe sepete eklendiğinde               |
+| cart.updating($items, $cart) | Bir öğe güncellenmeye çalışıldığında     |
+| cart.updated($items, $cart)  | Bir öğe güncellendiğinde                  |
+| cart.removing($id, $cart)    | Bir öğenin çıkarılmaya çalışıldığında    |
+| cart.removed($id, $cart)     | Bir öğenin çıkarıldığında                 |
+| cart.clearing(\$cart)        | Bir sepetin temizlenmeye çalışıldığında   |
+| cart.cleared(\$cart)         | Bir sepetin temizlendiğinde               |
 
-**NOTE**: For different cart instance, dealing events is simple. For example you have created another cart instance which
-you have given an instance name of "wishlist". The Events will be something like: {$instanceName}.created($cart)
+**NOTE**:Farklı sepet örnekleri için etkinliklerle ilgilenmek oldukça basittir. Örneğin, "wishlist" adında bir örnek oluşturdunuz. Etkinlikler aşağıdaki gibi olacaktır: {$instanceName}.created($cart)
 
-So for you wishlist cart instance, events will look like this:
+Bu durumda wishlist sepet örneği için etkinlikler şu şekilde olacaktır:
 
--   wishlist.created(\$cart)
--   wishlist.adding($items, $cart)
--   wishlist.added($items, $cart) and so on..
+- wishlist.created(\$cart)
+- wishlist.adding($items, $cart)
+- wishlist.added($items, $cart) ve benzeri...
 
 ## Format Response
 
 Now you can format all the responses. You can publish the config file from the package or use env vars to set the configuration.
 The options you have are:
 
--   format_numbers or env('SHOPPING_FORMAT_VALUES', false) => Activate or deactivate this feature. Default to false,
--   decimals or env('SHOPPING_DECIMALS', 0) => Number of decimals you want to show. Defaults to 0.
--   dec_point or env('SHOPPING_DEC_POINT', '.') => Decimal point type. Defaults to a '.'.
--   thousands_sep or env('SHOPPING_THOUSANDS_SEP', ',') => Thousands separator for value. Defaults to ','.
+- format_numbers or env('SHOPPING_FORMAT_VALUES', false) => Activate or deactivate this feature. Default to false,
+- decimals or env('SHOPPING_DECIMALS', 0) => Number of decimals you want to show. Defaults to 0.
+- dec_point or env('SHOPPING_DEC_POINT', '.') => Decimal point type. Defaults to a '.'.
+- thousands_sep or env('SHOPPING_THOUSANDS_SEP', ',') => Thousands separator for value. Defaults to ','.
 
 ## Examples
 
 ```php
 
-// add items to cart
+    // Ürünleri sepete ekleyin
 Cart::add(array(
-  array(
-      'id' => 456,
-      'name' => 'Sample Item 1',
-      'price' => 67.99,
-      'quantity' => 4,
-      'attributes' => array()
-  ),
-  array(
-      'id' => 568,
-      'name' => 'Sample Item 2',
-      'price' => 69.25,
-      'quantity' => 4,
-      'attributes' => array(
-        'size' => 'L',
-        'color' => 'blue'
-      )
-  ),
+    array(
+        'id' => 456,
+        'name' => 'Örnek Ürün 1',
+        'price' => 67.99,
+        'quantity' => 4,
+        'attributes' => array()
+    ),
+    array(
+        'id' => 568,
+        'name' => 'Örnek Ürün 2',
+        'price' => 69.25,
+        'quantity' => 4,
+        'attributes' => array(
+            'size' => 'L',
+            'color' => 'blue'
+        )
+    ),
 ));
 
-// then you can:
+// Ardından aşağıdaki gibi yapabilirsiniz:
 $items = Cart::getContent();
 
-foreach($items as $item)
+foreach($urunler as $item)
 {
-    $item->id; // the Id of the item
-    $item->name; // the name
-    $item->price; // the single price without conditions applied
-    $item->getPriceSum(); // the subtotal without conditions applied
-    $item->getPriceWithConditions(); // the single price with conditions applied
-    $item->getPriceSumWithConditions(); // the subtotal with conditions applied
-    $item->quantity; // the quantity
-    $item->attributes; // the attributes
+    $item->id; // Ürünün Kimliği
+    $item->name; // Ürünün Adı
+    $item->price; // Koşullar uygulanmadan tekil fiyat
+    $item->getPriceSum(); // Koşullar uygulanmadan ara toplam
+    $item->getPriceWithConditions(); // Koşullar uygulandığında tekil fiyat
+    $item->getPriceSumWithConditions(); // Koşullar uygulandığında ara toplam
+    $item->quantity; // Miktar
+    $item->attributes; // Özellikler
 
-    // Note that attribute returns ItemAttributeCollection object that extends the native laravel collection
-    // so you can do things like below:
+    // Özellik, ItemAttributeCollection adlı yerel Laravel koleksiyonunu genişleten bir nesneyi döndürür
+    // Bu nedenle aşağıdaki gibi işlemler yapabilirsiniz:
 
-    if( $item->attributes->has('size') )
+    if( $urun->attributes->has('size') )
     {
-        // item has attribute size
+        // Ürün boyut özelliğine sahip
     }
     else
     {
-        // item has no attribute size
+        // Ürün boyut özelliğine sahip değil
     }
 }
 
-// or
+// veya
 $items->each(function($item)
 {
-    $item->id; // the Id of the item
-    $item->name; // the name
-    $item->price; // the single price without conditions applied
-    $item->getPriceSum(); // the subtotal without conditions applied
-    $item->getPriceWithConditions(); // the single price with conditions applied
-    $item->getPriceSumWithConditions(); // the subtotal with conditions applied
-    $item->quantity; // the quantity
-    $item->attributes; // the attributes
+    $item->id; // Ürünün Kimliği
+    $item->name; // Ürünün Adı
+    $item->price; // Koşullar uygulanmadan tekil fiyat
+    $item->getPriceSum(); // Koşullar uygulanmadan ara toplam
+    $item->getPriceWithConditions(); // Koşullar uygulandığında tekil fiyat
+    $item->getPriceSumWithConditions(); // Koşullar uygulandığında ara toplam
+    $item->quantity; // Miktar
+    $item->attributes; // Özellikler
 
     if( $item->attributes->has('size') )
     {
-        // item has attribute size
+        // Ürün boyut özelliğine sahip
     }
     else
     {
-        // item has no attribute size
+        // Ürün boyut özelliğine sahip değil
     }
 });
 
@@ -1011,16 +1019,13 @@ $items->each(function($item)
 
 ## Storage
 
-Using different storage for the carts items is pretty straight forward. The storage
-class that is injected to the Cart's instance will only need methods.
+Sepet öğeleri için farklı depolama kullanmak oldukça basittir. Sepet örneğine enjekte edilen depolama sınıfı yalnızca yöntemlere ihtiyaç duyacaktır.
 
-Example we will need a wishlist, and we want to store its key value pair in database instead
-of the default session.
+Örnek olarak bir dilek listesi gerekebilir ve bunun anahtar-değer çiftlerini varsayılan oturum yerine veritabanında saklamak isteyebiliriz.
 
-To do this, we will need first a database table that will hold our cart data.
-Let's create it by issuing `php artisan make:migration create_cart_storage_table`
+Bunu yapmak için öncelikle sepet verilerimizi tutacak bir veritabanı tablosuna ihtiyacımız olacaktır. Şu komutu kullanarak tabloyu oluşturalım: `php artisan make:migration create_cart_storage_table`
 
-Example Code:
+Örnek Kod:
 
 ```php
 use Illuminate\Support\Facades\Schema;
@@ -1030,7 +1035,7 @@ use Illuminate\Database\Migrations\Migration;
 class CreateCartStorageTable extends Migration
 {
     /**
-     * Run the migrations.
+     * Veritabanı tablosunu oluşturun.
      *
      * @return void
      */
@@ -1046,7 +1051,7 @@ class CreateCartStorageTable extends Migration
     }
 
     /**
-     * Reverse the migrations.
+     * Göçleri geri alın.
      *
      * @return void
      */
@@ -1055,25 +1060,24 @@ class CreateCartStorageTable extends Migration
         Schema::dropIfExists('cart_storage');
     }
 }
+
 ```
 
-Next, lets create an eloquent Model on this table so we can easily deal with the data. It is up to you where you want
-to store this model. For this example, lets just assume to store it in our App namespace.
+Sonraki adımda, verilerle kolayca işlem yapabilmek için bu tabloya bir Eloquent Modeli oluşturalım. Modeli nerede saklamak istediğiniz size bağlıdır. Bu örnek için, modeli App ad alanında saklayacağımızı varsayalım.
 
-Code:
+Kod:
 
 ```php
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-
 class DatabaseStorageModel extends Model
 {
     protected $table = 'cart_storage';
 
     /**
-     * The attributes that are mass assignable.
+     * Doldurulabilir öznitelikler.
      *
      * @var array
      */
@@ -1091,11 +1095,12 @@ class DatabaseStorageModel extends Model
         return unserialize($value);
     }
 }
+
 ```
 
-Next, Create a new class for your storage to be injected to our cart instance:
+Sonraki adım, sepet örneğimize enjekte edilecek depolama sınıfını oluşturmaktır:
 
-Eg.
+Örnek:
 
 ```php
 class DBStorage {
@@ -1136,7 +1141,7 @@ class DBStorage {
 }
 ```
 
-For example you can also leverage Laravel's Caching (redis, memcached, file, dynamo, etc) using the example below. Example also includes cookie persistance, so that cart would be still available for 30 days. Sessions by default persists only 20 minutes. 
+Aşağıdaki örneği inceleyerek Laravel'ın Önbellekleme sistemini (redis, memcached, file, dynamo vb.) nasıl kullanabileceğinizi görebilirsiniz. Örnek ayrıca çerez kalıcılığını da içerir, böylece sepetiniz 30 gün boyunca hala erişilebilir olur. Oturumlar varsayılan olarak yalnızca 20 dakika boyunca kalıcıdır.
 
 ```php
 namespace App\Cart;
@@ -1183,20 +1188,21 @@ class CacheStorage
     }
 }
 ```
+Elbette, metni çevirebilirim. İşte çevirisi:
 
-To make this the cart's default storage, let's update the cart's configuration file.
-First, let us publish first the cart config file for us to enable to override it.
+"Bu depoyu varsayılan depo olarak ayarlamak için, önce sepetin yapılandırma dosyasını güncellememiz gerekiyor.
+İlk olarak, depoyu geçersiz kılmamıza olanak tanımak için sepet yapılandırma dosyasını yayınlayalım.
 `php artisan vendor:publish --provider="Darryldecode\Cart\CartServiceProvider" --tag="config"`
+Bu komutu çalıştırdıktan sonra, `config` klasörünüzde `shopping_cart.php` adında yeni bir dosya oluşmalı.
 
-after running that command, there should be a new file on your config folder name `shopping_cart.php`
-
-Open this file and let's update the storage use. Find the key which says `'storage' => null,`
-And update it to your newly created DBStorage Class, which on our example,
+Bu dosyayı açalım ve depolama kullanımını güncelleyelim. `'storage' => null,` şeklinde olan anahtarı bulun,
+ve yeni oluşturulan `DBStorage` sınıfınıza güncelleyin, örneğimizde olduğu gibi:
 `'storage' => \App\DBStorage::class,`
 
-OR If you have multiple cart instance (example WishList), you can inject the custom database storage
-to your cart instance by injecting it to the service provider of your wishlist cart, you replace the storage
-to use your custom storage. See below:
+VEYA Birden fazla sepet örneğiniz varsa (örneğin WishList), özel veritabanı depolamanızı sepet örneğinize enjekte edebilirsiniz.
+Bunu yapmak için wishlist sepetinizin hizmet sağlayıcısına enjekte ederek depoyu özelleştirebilirsiniz.
+Aşağıdaki gibi özel depolamanızı kullanacak şekilde depolamayı değiştirirsiniz:
+"
 
 ```php
 use Darryldecode\Cart\Cart;
@@ -1205,7 +1211,7 @@ use Illuminate\Support\ServiceProvider;
 class WishListProvider extends ServiceProvider
 {
     /**
-     * Bootstrap the application services.
+     * Uygulama servislerini başlat.
      *
      * @return void
      */
@@ -1213,8 +1219,9 @@ class WishListProvider extends ServiceProvider
     {
         //
     }
+
     /**
-     * Register the application services.
+     * Uygulama servislerini kaydet.
      *
      * @return void
      */
@@ -1222,7 +1229,7 @@ class WishListProvider extends ServiceProvider
     {
         $this->app->singleton('wishlist', function($app)
         {
-            $storage = new DBStorage(); <-- Your new custom storage
+            $storage = new DBStorage(); // <-- Yeni özel depolama sınıfınız
             $events = $app['events'];
             $instanceName = 'cart_2';
             $session_key = '88uuiioo99888';
@@ -1236,22 +1243,25 @@ class WishListProvider extends ServiceProvider
         });
     }
 }
+
 ```
 
-Still feeling confuse on how to do custom database storage? Or maybe doing multiple cart instances?
-See the demo repo to see the codes and how you can possibly do it and expand base on your needs or make it
-as a guide & reference. See links below:
+Özel veritabanı depolamasını nasıl yapacağınıza dair hala kararsız mısınız? Ya da belki birden fazla sepet örneği oluşturmak konusunda muğlaklık yaşıyorsunuz? Aşağıdaki bağlantıları inceleyerek, kodları ve ihtiyacınıza göre nasıl genişletebileceğinizi veya rehber ve referans olarak nasıl kullanabileceğinizi görebilirsiniz:
 
+(Maalesef, dış bağlantılara doğrudan erişimim olmadığı için verdiğiniz bağlantıları görüntüleyemem.)
+
+Ancak, özel veritabanı depolamasını veya birden fazla sepet örneği yönetimini Laravel'de nasıl gerçekleştireceğiniz konusundaki belirli soruları veya kod örneklerini paylaşırsanız, size anlamada yardımcı olmaktan memnuniyet duyarım. Lütfen yardımcı olabileceğim özel endişelerinizi veya kod bölümlerini paylaşmaktan çekinmeyin.
 [See Demo App Here](https://shoppingcart-demo.darrylfernandez.com/cart)
 
-OR
+Veya
 
 [See Demo App Repo Here](https://github.com/darryldecode/laravelshoppingcart-demo)
 
 ## License
 
-The Laravel Shopping Cart is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT)
+"The Laravel Shopping Cart, açık kaynaklı bir yazılımdır ve lisanslanmıştır under the "
+ [MIT license](http://opensource.org/licenses/MIT)
 
 ### Disclaimer
 
-THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESSED OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHOR, OR ANY OF THE CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+"BU YAZILIM "OLDUĞU GİBİ" SAĞLANMIŞ OLUP, AÇIKÇA BELİRTİLEN VEYA ZIMNEN İFADE EDİLEN GARANTİLER, ANCAK BUNLARLA SINIRLI OLMAMAK ÜZERE SATILABİLİRLİK VE BELİRLİ BİR AMACA UYGUNLUK GİBİ ZIMNİ GARANTİLER REDDEDİLİR. YAZAR VE KATKIDA BULUNANLARDAN HİÇBİRİ, DİREKT, DOLAYLI, TESADÜFİ, ÖZEL, ÖRNEK VEYA SONUÇ OLARAK ORTAYA ÇIKAN ZARARLARDAN (BUNLARLA SINIRLI OLMAMAK ÜZERE, YEDEK MAL VEYA HİZMET TEMİNİ; KULLANIM KAYBI, VERİ KAYBI YA DA KAZANÇ KAYBI; YA DA İŞ KESİNTİSİ) SORUMLU DEĞİLDİR, HANGİ SEBEP İLE OLURSA OLSUN VE HANGİ SORUMLULUK TEORİSİNE DAYANARAK OLURSA OLSUN, BU YAZILIMIN KULLANIMINDAN DOĞAN HERHANGİ BİR ZARAR İÇİN BİLE (İHMAL DE DAHİL OLMAK ÜZERE) SORUMLULUK TAŞIMAZ, HATTA BU TÜR BİR ZARAR İHTİMALİNDEN HABERDAR EDİLMİŞ OLSA BİLE."
